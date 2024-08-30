@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+        }
+        h2 {
+            border-bottom: 2px solid #33ff33;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background-color: #33ff33;
+            color: #000000;
+        }
+        label {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="location.href='https://fanspend2-6d01bb714a0e.herokuapp.com/'">Home</button>
+    <h2>Register</h2>
+    <form id="registerForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+
+        <!-- MLB Fan Status -->
+        <label for="mlbFanStatus">MLB Fan Status</label>
+        <select id="mlbFanStatus" required>
+            <option value="Not a Fan">Not a Fan</option>
+            <option value="Fan">Fan</option>
+            <option value="Super Fan">Super Fan</option>
+        </select>
+        <select id="favoriteMLBTeam" style="display: none;">
+            <option value="">Select your favorite MLB team</option>
+            <option value="No favorite team">No Team</option>
+            <option value="Arizona Diamondbacks">Arizona Diamondbacks</option>
+            <option value="Atlanta Braves">Atlanta Braves</option>
+            <option value="Baltimore Orioles">Baltimore Orioles</option>
+            <option value="Boston Red Sox">Boston Red Sox</option>
+            <option value="Chicago Cubs">Chicago Cubs</option>
+            <option value="Chicago White Sox">Chicago White Sox</option>
+            <option value="Cincinnati Reds">Cincinnati Reds</option>
+            <option value="Cleveland Guardians">Cleveland Guardians</option>
+            <option value="Colorado Rockies">Colorado Rockies</option>
+            <option value="Detroit Tigers">Detroit Tigers</option>
+            <option value="Houston Astros">Houston Astros</option>
+            <option value="Kansas City Royals">Kansas City Royals</option>
+            <option value="Los Angeles Angels">Los Angeles Angels</option>
+            <option value="Los Angeles Dodgers">Los Angeles Dodgers</option>
+            <option value="Miami Marlins">Miami Marlins</option>
+            <option value="Milwaukee Brewers">Milwaukee Brewers</option>
+            <option value="Minnesota Twins">Minnesota Twins</option>
+            <option value="New York Mets">New York Mets</option>
+            <option value="New York Yankees">New York Yankees</option>
+            <option value="Oakland Athletics">Oakland Athletics</option>
+            <option value="Philadelphia Phillies">Philadelphia Phillies</option>
+            <option value="Pittsburgh Pirates">Pittsburgh Pirates</option>
+            <option value="San Diego Padres">San Diego Padres</option>
+            <option value="San Francisco Giants">San Francisco Giants</option>
+            <option value="Seattle Mariners">Seattle Mariners</option>
+            <option value="St. Louis Cardinals">St. Louis Cardinals</option>
+            <option value="Tampa Bay Rays">Tampa Bay Rays</option>
+            <option value="Texas Rangers">Texas Rangers</option>
+            <option value="Toronto Blue Jays">Toronto Blue Jays</option>
+            <option value="Washington Nationals">Washington Nationals</option>
+        </select>
+
+        <!-- NBA Fan Status -->
+        <label for="nbaFanStatus">NBA Fan Status</label>
+        <select id="nbaFanStatus" required>
+            <option value="Not a Fan">Not a Fan</option>
+            <option value="Fan">Fan</option>
+            <option value="Super Fan">Super Fan</option>
+        </select>
+        <select id="favoriteNBATeam" style="display: none;">
+            <option value="">Select your favorite NBA team</option>
+            <option value="No favorite team">No Team</option>
+            <option value="Atlanta Hawks">Atlanta Hawks</option>
+            <option value="Boston Celtics">Boston Celtics</option>
+            <option value="Brooklyn Nets">Brooklyn Nets</option>
+            <option value="Charlotte Hornets">Charlotte Hornets</option>
+            <option value="Chicago Bulls">Chicago Bulls</option>
+            <option value="Cleveland Cavaliers">Cleveland Cavaliers</option>
+            <option value="Dallas Mavericks">Dallas Mavericks</option>
+            <option value="Denver Nuggets">Denver Nuggets</option>
+            <option value="Detroit Pistons">Detroit Pistons</option>
+            <option value="Golden State Warriors">Golden State Warriors</option>
+            <option value="Houston Rockets">Houston Rockets</option>
+            <option value="Indiana Pacers">Indiana Pacers</option>
+            <option value="Los Angeles Clippers">Los Angeles Clippers</option>
+            <option value="Los Angeles Lakers">Los Angeles Lakers</option>
+            <option value="Memphis Grizzlies">Memphis Grizzlies</option>
+            <option value="Miami Heat">Miami Heat</option>
+            <option value="Milwaukee Bucks">Milwaukee Bucks</option>
+            <option value="Minnesota Timberwolves">Minnesota Timberwolves</option>
+            <option value="New Orleans Pelicans">New Orleans Pelicans</option>
+            <option value="New York Knicks">New York Knicks</option>
+            <option value="Oklahoma City Thunder">Oklahoma City Thunder</option>
+            <option value="Orlando Magic">Orlando Magic</option>
+            <option value="Philadelphia 76ers">Philadelphia 76ers</option>
+            <option value="Phoenix Suns">Phoenix Suns</option>
+            <option value="Portland Trail Blazers">Portland Trail Blazers</option>
+            <option value="Sacramento Kings">Sacramento Kings</option>
+            <option value="San Antonio Spurs">San Antonio Spurs</option>
+            <option value="Toronto Raptors">Toronto Raptors</option>
+            <option value="Utah Jazz">Utah Jazz</option>
+            <option value="Washington Wizards">Washington Wizards</option>
+        </select>
+
+        <!-- NFL Fan Status -->
+        <label for="nflFanStatus">NFL Fan Status</label>
+        <select id="nflFanStatus" required>
+            <option value="Not a Fan">Not a Fan</option>
+            <option value="Fan">Fan</option>
+            <option value="Super Fan">Super Fan</option>
+        </select>
+        <select id="favoriteNFLTeam" style="display: none;">
+            <option value="">Select your favorite NFL team</option>
+            <option value="No favorite team">No Team</option>
+            <option value="Arizona Cardinals">Arizona Cardinals</option>
+            <option value="Atlanta Falcons">Atlanta Falcons</option>
+            <option value="Baltimore Ravens">Baltimore Ravens</option>
+            <option value="Buffalo Bills">Buffalo Bills</option>
+            <option value="Carolina Panthers">Carolina Panthers</option>
+            <option value="Chicago Bears">Chicago Bears</option>
+            <option value="Cincinnati Bengals">Cincinnati Bengals</option>
+            <option value="Cleveland Browns">Cleveland Browns</option>
+            <option value="Dallas Cowboys">Dallas Cowboys</option>
+            <option value="Denver Broncos">Denver Broncos</option>
+            <option value="Detroit Lions">Detroit Lions</option>
+            <option value="Green Bay Packers">Green Bay Packers</option>
+            <option value="Houston Texans">Houston Texans</option>
+            <option value="Indianapolis Colts">Indianapolis Colts</option>
+            <option value="Jacksonville Jaguars">Jacksonville Jaguars</option>
+            <option value="Kansas City Chiefs">Kansas City Chiefs</option>
+            <option value="Las Vegas Raiders">Las Vegas Raiders</option>
+            <option value="Los Angeles Chargers">Los Angeles Chargers</option>
+            <option value="Los Angeles Rams">Los Angeles Rams</option>
+            <option value="Miami Dolphins">Miami Dolphins</option>
+            <option value="Minnesota Vikings">Minnesota Vikings</option>
+            <option value="New England Patriots">New England Patriots</option>
+            <option value="New Orleans Saints">New Orleans Saints</option>
+            <option value="New York Giants">New York Giants</option>
+            <option value="New York Jets">New York Jets</option>
+            <option value="Philadelphia Eagles">Philadelphia Eagles</option>
+            <option value="Pittsburgh Steelers">Pittsburgh Steelers</option>
+            <option value="San Francisco 49ers">San Francisco 49ers</option>
+            <option value="Seattle Seahawks">Seattle Seahawks</option>
+            <option value="Tampa Bay Buccaneers">Tampa Bay Buccaneers</option>
+            <option value="Tennessee Titans">Tennessee Titans</option>
+            <option value="Washington Commanders">Washington Commanders</option>
+        </select>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <button onclick="location.href='login.html'">Already have an account? Login</button>
+
+    <script>
+        document.getElementById('mlbFanStatus').addEventListener('change', function() {
+            var style = this.value === 'Fan' || this.value === 'Super Fan' ? 'block' : 'none';
+            document.getElementById('favoriteMLBTeam').style.display = style;
+            document.getElementById('favoriteMLBTeam').required = this.value === 'Fan' || this.value === 'Super Fan';
+        });
+
+        document.getElementById('nbaFanStatus').addEventListener('change', function() {
+            var style = this.value === 'Fan' || this.value === 'Super Fan' ? 'block' : 'none';
+            document.getElementById('favoriteNBATeam').style.display = style;
+            document.getElementById('favoriteNBATeam').required = this.value === 'Fan' || this.value === 'Super Fan';
+        });
+
+        document.getElementById('nflFanStatus').addEventListener('change', function() {
+            var style = this.value === 'Fan' || this.value === 'Super Fan' ? 'block' : 'none';
+            document.getElementById('favoriteNFLTeam').style.display = style;
+            document.getElementById('favoriteNFLTeam').required = this.value === 'Fan' || this.value === 'Super Fan';
+        });
+
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const mlbFanStatus = document.getElementById('mlbFanStatus').value;
+            const favoriteMLBTeam = document.getElementById('favoriteMLBTeam').value;
+            const nbaFanStatus = document.getElementById('nbaFanStatus').value;
+            const favoriteNBATeam = document.getElementById('favoriteNBATeam').value;
+            const nflFanStatus = document.getElementById('nflFanStatus').value;
+            const favoriteNFLTeam = document.getElementById('favoriteNFLTeam').value;
+
+            if (mlbFanStatus === 'Not a Fan' && nbaFanStatus === 'Not a Fan' && nflFanStatus === 'Not a Fan') {
+                alert('You must be a fan or super fan of at least one league to register.');
+                return;
+            }
+
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    mlbFanStatus,
+                    favoriteMLBTeam,
+                    nbaFanStatus,
+                    favoriteNBATeam,
+                    nflFanStatus,
+                    favoriteNFLTeam,
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                window.location.href = '/homepage.html';
+            } else {
+                alert(data.message);
+            }
+        };
+    </script>
+</body>
+</html>

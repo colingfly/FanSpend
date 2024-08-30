@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+        }
+        h2, h1 {
+            border-bottom: 2px solid #33ff33;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background-color: #33ff33;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="location.href='https://fanspend2-6d01bb714a0e.herokuapp.com/'">Home</button>
+    <h1>Welcome, please login</h1>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username or Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="hidden" id="loginType" value="">
+        <button type="submit">Login</button>
+    </form>
+    <button id="fan-register-button" style="display: none;">Register as a Fan</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            document.getElementById('loginType').value = type || 'fan'; // default to 'fan' if type is not specified
+            
+            if (type === 'fan') {
+                document.getElementById('fan-register-button').style.display = 'block';
+            }
+        });
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault(); // Prevent the default form submission
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginType = document.getElementById('loginType').value;
+
+            const endpoint = loginType === 'customer' ? '/customer-login' : '/login';
+
+            // Sending a POST request to the appropriate endpoint
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
+            });
+
+            const data = await response.json(); // Parse the JSON response
+            if (response.ok) {
+                // Redirect to home page if login is successful
+                window.location.href = loginType === 'customer' ? '/insights.html' : '/homepage.html';
+            } else {
+                // Display an error message if login fails
+                alert(data.message);
+            }
+        };
+
+        document.getElementById('fan-register-button').addEventListener('click', () => {
+            window.location.href = '/register.html';
+        });
+    </script>
+</body>
+</html>

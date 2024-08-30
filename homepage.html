@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect a Bank Account</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 15px 30px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #33ff33;
+            color: #000000;
+        }
+        .message-box {
+            display: none;
+            margin: 20px;
+            padding: 15px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #33ff33;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #000000;
+            color: #33ff33;
+        }
+    </style>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <script>
+        function exchangePublicToken(publicToken) {
+            fetch('/api/exchange_public_token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ public_token: publicToken }),
+            })
+            .then(response => response.json())
+            .then(exchangeData => {
+                if (exchangeData.access_token) {
+                    fetchTransactions(exchangeData.access_token);
+                } else {
+                    console.error('Access token not present in the exchange response');
+                }
+            })
+            .catch(error => {
+                console.error('Error exchanging public token:', error);
+            });
+        }
+
+        function fetchTransactions(accessToken) {
+            fetch(`/api/transactions?access_token=${accessToken}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    fetchTransactionsWithSponsors();
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+
+        function fetchTransactionsWithSponsors() {
+            fetch('/api/transactions_with_sponsors')
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('sponsor-transactions');
+                    table.removeAttribute('hidden'); // Show table when data is loaded
+                    table.innerHTML = ""; // Clear any existing rows
+                    data.forEach(transaction => {
+                        const row = table.insertRow(-1);
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+                        const cell3 = row.insertCell(2);
+                        const cell4 = row.insertCell(3);
+                        const cell5 = row.insertCell(4);
+                        const cell6 = row.insertCell(5);
+                        cell1.textContent = transaction.date;
+                        cell2.textContent = transaction.name;
+                        cell3.textContent = `$${transaction.amount}`;
+                        cell4.textContent = transaction.favorite_team;
+                        cell5.textContent = transaction.favorite_nba_team;
+                        cell6.textContent = transaction.favorite_nfl_team;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching transactions with sponsors:', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('link-button').addEventListener('click', function() {
+                console.log('Button clicked, attempting to create a link token');
+                fetch('/api/create_link_token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data received from create link token:', data);
+                    const linkHandler = Plaid.create({
+                        token: data.link_token,
+                        onSuccess: (public_token, metadata) => {
+                            console.log('Success! Received public token:', public_token);
+                            exchangePublicToken(public_token);
+                        },
+                        onExit: (err, metadata) => {
+                            console.error('Plaid Link exit:', err, metadata);
+                        },
+                        onLoad: () => {
+                            console.log('Plaid Link loaded successfully!');
+                        }
+                    });
+                    linkHandler.open();
+                })
+                .catch(error => {
+                    console.error('Error during Plaid Link initialization:', error);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <button onclick="location.href='https://fanspend2-6d01bb714a0e.herokuapp.com/'">Home</button>
+    </header>
+    <button id="link-button">Connect Primary Spending Account</button>
+    <div id="message-box" class="message-box"></div>
+    <table id="sponsor-transactions" hidden>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Favorite Team</th>
+                <th>Favorite NBA Team</th>
+                <th>Favorite NFL Team</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Transactions will be dynamically added here -->
+        </tbody>
+    </table>
+</body>
+
+</html>

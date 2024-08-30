@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to FanSpend</title>
+    <style>
+        body {
+            background-color: #000000; /* Black background */
+            color: #33ff33; /* Bright green text */
+            font-family: 'Courier New', monospace; /* Monospace font for that classic coding look */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 15px 30px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #33ff33;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to FanSpend</h1>
+    <button onclick="window.location.href='register.html'">I am a Fan</button>
+    <button onclick="window.location.href='login.html?type=customer'">I am a Customer</button>
+</body>
+</html>
