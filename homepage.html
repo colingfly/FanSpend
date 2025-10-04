@@ -104,22 +104,20 @@
                 .then(response => response.json())
                 .then(data => {
                     const table = document.getElementById('sponsor-transactions');
+                    const tbody = table.querySelector('tbody');
                     table.removeAttribute('hidden'); // Show table when data is loaded
-                    table.innerHTML = ""; // Clear any existing rows
+                    tbody.innerHTML = ""; // Clear any existing rows
                     data.forEach(transaction => {
-                        const row = table.insertRow(-1);
-                        const cell1 = row.insertCell(0);
-                        const cell2 = row.insertCell(1);
-                        const cell3 = row.insertCell(2);
-                        const cell4 = row.insertCell(3);
-                        const cell5 = row.insertCell(4);
-                        const cell6 = row.insertCell(5);
-                        cell1.textContent = transaction.date;
-                        cell2.textContent = transaction.name;
-                        cell3.textContent = `$${transaction.amount}`;
-                        cell4.textContent = transaction.favorite_team;
-                        cell5.textContent = transaction.favorite_nba_team;
-                        cell6.textContent = transaction.favorite_nfl_team;
+                        const row = tbody.insertRow(-1);
+                        row.insertCell(0).textContent = transaction.date;
+                        row.insertCell(1).textContent = transaction.name;
+                        row.insertCell(2).textContent = `$${transaction.amount}`;
+                        row.insertCell(3).textContent = transaction.matched_sponsor || 'N/A';
+                        row.insertCell(4).textContent = transaction.sponsor_league || 'N/A';
+                        row.insertCell(5).textContent = transaction.fanspend_points ?? 0;
+                        row.insertCell(6).textContent = transaction.favorite_team;
+                        row.insertCell(7).textContent = transaction.favorite_nba_team;
+                        row.insertCell(8).textContent = transaction.favorite_nfl_team;
                     });
                 })
                 .catch(error => {
@@ -173,6 +171,9 @@
                 <th>Date</th>
                 <th>Name</th>
                 <th>Amount</th>
+                <th>Sponsor</th>
+                <th>League</th>
+                <th>FanSpend Points</th>
                 <th>Favorite Team</th>
                 <th>Favorite NBA Team</th>
                 <th>Favorite NFL Team</th>

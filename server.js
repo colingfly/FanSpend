@@ -358,6 +358,32 @@ const getBestMatch = (merchantName, sponsorNames) => {
     return bestMatch.rating >= 0.6 ? bestMatch.target : null; // Use a threshold of 0.6 for fuzzy matching
 };
 
+const FAN_STATUS_MULTIPLIERS = {
+    Fan: 1,
+    'Super Fan': 2,
+};
+
+const isEligibleFanStatus = (status) => ['Fan', 'Super Fan'].includes(status);
+
+const getFanStatusForLeague = (league, transaction) => {
+    switch (league) {
+        case 'MLB':
+            return transaction.mlb_fan_status;
+        case 'NBA':
+            return transaction.nba_fan_status;
+        case 'NFL':
+            return transaction.nfl_fan_status;
+        default:
+            return null;
+    }
+};
+
+const calculateFanSpendPoints = (amount, fanStatus) => {
+    const numericAmount = Number(amount) || 0;
+    const multiplier = FAN_STATUS_MULTIPLIERS[fanStatus] || 0;
+    return Math.round(numericAmount * multiplier);
+};
+
 app.get('/api/transactions_with_sponsors', (req, res) => {
     const username = req.session.username;
 
@@ -393,18 +419,29 @@ app.get('/api/transactions_with_sponsors', (req, res) => {
                 return res.status(500).json({ message: 'Error fetching transactions data' });
             }
 
-            const filteredResults = transactionResults.filter(transaction => {
+            const filteredResults = transactionResults.reduce((acc, transaction) => {
                 const bestMatch = getBestMatch(transaction.merchant_name, sponsors);
-                if (bestMatch) {
-                    const league = sponsorMap[bestMatch];
-                    return (
-                        (league === 'MLB' && transaction.mlb_fan_status === 'Fan' || transaction.mlb_fan_status === 'Super Fan') ||
-                        (league === 'NBA' && transaction.nba_fan_status === 'Fan' || transaction.nba_fan_status === 'Super Fan') ||
-                        (league === 'NFL' && transaction.nfl_fan_status === 'Fan' || transaction.nfl_fan_status === 'Super Fan')
-                    );
+                if (!bestMatch) {
+                    return acc;
                 }
-                return false;
-            });
+
+                const league = sponsorMap[bestMatch];
+                const fanStatus = getFanStatusForLeague(league, transaction);
+
+                if (!isEligibleFanStatus(fanStatus)) {
+                    return acc;
+                }
+
+                const fanspendPoints = calculateFanSpendPoints(transaction.amount, fanStatus);
+
+                acc.push({
+                    ...transaction,
+                    matched_sponsor: bestMatch,
+                    sponsor_league: league,
+                    fanspend_points: fanspendPoints,
+                });
+                return acc;
+            }, []);
 
             res.json(filteredResults);
         });
