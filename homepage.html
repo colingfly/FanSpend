@@ -45,6 +45,23 @@
             font-family: 'Courier New', monospace;
             text-align: center;
         }
+        .summary {
+            border: 1px solid #33ff33;
+            padding: 20px;
+            margin: 20px 0;
+            width: 80%;
+            display: none;
+        }
+        .summary h2 {
+            margin-top: 0;
+        }
+        .summary ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .summary li {
+            margin: 5px 0;
+        }
         table {
             width: 80%;
             border-collapse: collapse;
@@ -99,27 +116,63 @@
                 });
         }
 
+        function updateSummary(summary) {
+            const container = document.getElementById('fanspend-summary');
+            const totalElement = document.getElementById('fanspend-total');
+            const breakdownList = document.getElementById('fanspend-by-league');
+
+            if (!summary || summary.total === 0) {
+                container.style.display = 'none';
+                totalElement.textContent = '0';
+                breakdownList.innerHTML = '';
+                return;
+            }
+
+            container.style.display = 'block';
+            totalElement.textContent = summary.total.toLocaleString();
+            breakdownList.innerHTML = '';
+
+            Object.entries(summary.byLeague)
+                .sort(([, pointsA], [, pointsB]) => pointsB - pointsA)
+                .forEach(([league, points]) => {
+                    const item = document.createElement('li');
+                    item.textContent = `${league}: ${points.toLocaleString()} pts`;
+                    breakdownList.appendChild(item);
+                });
+        }
+
+        function formatCurrency(amount) {
+            const numericAmount = Number(amount);
+            if (!Number.isFinite(numericAmount)) {
+                return '$0.00';
+            }
+            return `$${numericAmount.toFixed(2)}`;
+        }
+
         function fetchTransactionsWithSponsors() {
             fetch('/api/transactions_with_sponsors')
                 .then(response => response.json())
                 .then(data => {
+                    const payload = Array.isArray(data) ? { transactions: data, summary: null } : (data || {});
+                    const { transactions = [], summary } = payload;
                     const table = document.getElementById('sponsor-transactions');
+                    const tbody = table.querySelector('tbody');
                     table.removeAttribute('hidden'); // Show table when data is loaded
-                    table.innerHTML = ""; // Clear any existing rows
-                    data.forEach(transaction => {
-                        const row = table.insertRow(-1);
-                        const cell1 = row.insertCell(0);
-                        const cell2 = row.insertCell(1);
-                        const cell3 = row.insertCell(2);
-                        const cell4 = row.insertCell(3);
-                        const cell5 = row.insertCell(4);
-                        const cell6 = row.insertCell(5);
-                        cell1.textContent = transaction.date;
-                        cell2.textContent = transaction.name;
-                        cell3.textContent = `$${transaction.amount}`;
-                        cell4.textContent = transaction.favorite_team;
-                        cell5.textContent = transaction.favorite_nba_team;
-                        cell6.textContent = transaction.favorite_nfl_team;
+                    tbody.innerHTML = ""; // Clear any existing rows
+                    updateSummary(summary);
+                    transactions.forEach(transaction => {
+                        const row = tbody.insertRow(-1);
+                        row.insertCell(0).textContent = transaction.date;
+                        row.insertCell(1).textContent = transaction.name;
+                        row.insertCell(2).textContent = formatCurrency(transaction.amount);
+                        row.insertCell(3).textContent = transaction.matched_sponsor || 'N/A';
+                        row.insertCell(4).textContent = transaction.sponsor_league || 'N/A';
+                        row.insertCell(5).textContent = transaction.fanspend_fan_status || 'N/A';
+                        const points = Number(transaction.fanspend_points ?? 0);
+                        row.insertCell(6).textContent = Number.isFinite(points) ? points.toLocaleString() : '0';
+                        row.insertCell(7).textContent = transaction.favorite_team;
+                        row.insertCell(8).textContent = transaction.favorite_nba_team;
+                        row.insertCell(9).textContent = transaction.favorite_nfl_team;
                     });
                 })
                 .catch(error => {
@@ -158,6 +211,9 @@
                     console.error('Error during Plaid Link initialization:', error);
                 });
             });
+
+            // Populate any existing transactions on load so returning fans can see their points immediately.
+            fetchTransactionsWithSponsors();
         });
     </script>
 </head>
@@ -167,12 +223,23 @@
     </header>
     <button id="link-button">Connect Primary Spending Account</button>
     <div id="message-box" class="message-box"></div>
+    <section id="fanspend-summary" class="summary">
+        <h2>FanSpend Points Summary</h2>
+        <p>Total Points: <span id="fanspend-total">0</span></p>
+        <p><small>Points are awarded at 10 pts per dollar with bonus multipliers for Fan and Super Fan statuses.</small></p>
+        <h3>By League</h3>
+        <ul id="fanspend-by-league"></ul>
+    </section>
     <table id="sponsor-transactions" hidden>
         <thead>
             <tr>
                 <th>Date</th>
                 <th>Name</th>
                 <th>Amount</th>
+                <th>Sponsor</th>
+                <th>League</th>
+                <th>Fan Status</th>
+                <th>FanSpend Points</th>
                 <th>Favorite Team</th>
                 <th>Favorite NBA Team</th>
                 <th>Favorite NFL Team</th>

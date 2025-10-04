@@ -358,6 +358,75 @@ const getBestMatch = (merchantName, sponsorNames) => {
     return bestMatch.rating >= 0.6 ? bestMatch.target : null; // Use a threshold of 0.6 for fuzzy matching
 };
 
+const FAN_STATUS_MULTIPLIERS = {
+    Fan: 1,
+    'Super Fan': 2,
+};
+
+const LEAGUE_MULTIPLIERS = {
+    MLB: 1,
+    NBA: 1,
+    NFL: 1,
+};
+
+const POINTS_PER_DOLLAR = 10;
+
+const isEligibleFanStatus = (status) => ['Fan', 'Super Fan'].includes(status);
+
+const getFanStatusForLeague = (league, transaction) => {
+    switch (league) {
+        case 'MLB':
+            return transaction.mlb_fan_status;
+        case 'NBA':
+            return transaction.nba_fan_status;
+        case 'NFL':
+            return transaction.nfl_fan_status;
+        default:
+            return null;
+    }
+};
+
+const normalizeAmount = (amount) => {
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount)) {
+        return 0;
+    }
+    return Math.max(0, numericAmount);
+};
+
+const calculateFanSpendPoints = (amount, fanStatus, league) => {
+    const normalizedAmount = normalizeAmount(amount);
+    const fanMultiplier = FAN_STATUS_MULTIPLIERS[fanStatus] || 0;
+    if (!fanMultiplier || normalizedAmount === 0) {
+        return { points: 0, multiplier: 0 };
+    }
+
+    const leagueMultiplier = LEAGUE_MULTIPLIERS[league] || 1;
+    const combinedMultiplier = fanMultiplier * leagueMultiplier;
+    const rawPoints = normalizedAmount * POINTS_PER_DOLLAR * combinedMultiplier;
+
+    return {
+        points: Math.round(rawPoints),
+        multiplier: combinedMultiplier,
+    };
+};
+
+const buildFanSpendSummary = (transactions) => {
+    return transactions.reduce((acc, transaction) => {
+        const points = transaction.fanspend_points || 0;
+        if (!points) {
+            return acc;
+        }
+
+        acc.total += points;
+        const league = transaction.sponsor_league;
+        if (league) {
+            acc.byLeague[league] = (acc.byLeague[league] || 0) + points;
+        }
+        return acc;
+    }, { total: 0, byLeague: {} });
+};
+
 app.get('/api/transactions_with_sponsors', (req, res) => {
     const username = req.session.username;
 
@@ -393,20 +462,42 @@ app.get('/api/transactions_with_sponsors', (req, res) => {
                 return res.status(500).json({ message: 'Error fetching transactions data' });
             }
 
-            const filteredResults = transactionResults.filter(transaction => {
+            const matchedTransactions = transactionResults.reduce((acc, transaction) => {
                 const bestMatch = getBestMatch(transaction.merchant_name, sponsors);
-                if (bestMatch) {
-                    const league = sponsorMap[bestMatch];
-                    return (
-                        (league === 'MLB' && transaction.mlb_fan_status === 'Fan' || transaction.mlb_fan_status === 'Super Fan') ||
-                        (league === 'NBA' && transaction.nba_fan_status === 'Fan' || transaction.nba_fan_status === 'Super Fan') ||
-                        (league === 'NFL' && transaction.nfl_fan_status === 'Fan' || transaction.nfl_fan_status === 'Super Fan')
-                    );
+                if (!bestMatch) {
+                    return acc;
                 }
-                return false;
-            });
 
-            res.json(filteredResults);
+                const league = sponsorMap[bestMatch];
+                const fanStatus = getFanStatusForLeague(league, transaction);
+
+                if (!isEligibleFanStatus(fanStatus)) {
+                    return acc;
+                }
+
+                const { points: fanspendPoints, multiplier: fanspendMultiplier } = calculateFanSpendPoints(transaction.amount, fanStatus, league);
+
+                if (!fanspendPoints) {
+                    return acc;
+                }
+
+                acc.push({
+                    ...transaction,
+                    matched_sponsor: bestMatch,
+                    sponsor_league: league,
+                    fanspend_points: fanspendPoints,
+                    fanspend_multiplier: fanspendMultiplier,
+                    fanspend_fan_status: fanStatus,
+                });
+                return acc;
+            }, []);
+
+            const summary = buildFanSpendSummary(matchedTransactions);
+
+            res.json({
+                summary,
+                transactions: matchedTransactions,
+            });
         });
     });
 });
