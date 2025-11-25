@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to FanSpend</title>
     <style>
         body {
-            background-color: #000000; /* Black background */
-            color: #33ff33; /* Bright green text */
-            font-family: 'Courier New', monospace; /* Monospace font for that classic coding look */
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
+            margin: 0;
         }
         h1 {
             margin-bottom: 20px;
@@ -25,6 +27,7 @@
             color: #33ff33;
             font-family: 'Courier New', monospace;
             cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
         }
         button:hover {
             background-color: #33ff33;
@@ -34,7 +37,8 @@
 </head>
 <body>
     <h1>Welcome to FanSpend</h1>
-    <button onclick="window.location.href='register.html'">I am a Fan</button>
-    <button onclick="window.location.href='login.html?type=customer'">I am a Customer</button>
+    <p>Earn rewards for supporting your favorite teams</p>
+    <button onclick="window.location.href='register.html'">I'm a Fan</button>
+    <button onclick="window.location.href='login.html?type=customer'">I'm a Sponsor</button>
 </body>
 </html>

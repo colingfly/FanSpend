@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FanSpend</title>
     <style>
         body {
             background-color: #000000;
             color: #33ff33;
             font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
         h2 {
             border-bottom: 2px solid #33ff33;
@@ -17,6 +21,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            max-width: 400px;
+            margin: 0 auto;
         }
         input, select, button {
             margin: 10px;
@@ -25,19 +31,36 @@
             background-color: #000000;
             color: #33ff33;
             font-family: 'Courier New', monospace;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
         }
         button:hover {
             background-color: #33ff33;
             color: #000000;
         }
         label {
-            margin-top: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .nav-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: auto;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <button onclick="location.href='https://fanspend2-6d01bb714a0e.herokuapp.com/'">Home</button>
-    <h2>Register</h2>
+    <button class="nav-button" onclick="location.href='/'">Home</button>
+    <h2>Create Your FanSpend Account</h2>
     <form id="registerForm">
         <input type="text" id="username" placeholder="Username" required>
         <input type="email" id="email" placeholder="Email" required>
@@ -174,67 +197,64 @@
         <button type="submit">Register</button>
     </form>
 
-    <button onclick="location.href='login.html'">Already have an account? Login</button>
+    <div class="login-link">
+        <button onclick="location.href='login.html'">Already have an account? Login</button>
+    </div>
 
     <script>
-        document.getElementById('mlbFanStatus').addEventListener('change', function() {
-            var style = this.value === 'Fan' || this.value === 'Super Fan' ? 'block' : 'none';
-            document.getElementById('favoriteMLBTeam').style.display = style;
-            document.getElementById('favoriteMLBTeam').required = this.value === 'Fan' || this.value === 'Super Fan';
-        });
+        // Toggle team selection based on fan status
+        function setupFanStatusToggle(statusId, teamId) {
+            document.getElementById(statusId).addEventListener('change', function() {
+                const showTeam = this.value === 'Fan' || this.value === 'Super Fan';
+                document.getElementById(teamId).style.display = showTeam ? 'block' : 'none';
+                document.getElementById(teamId).required = showTeam;
+            });
+        }
 
-        document.getElementById('nbaFanStatus').addEventListener('change', function() {
-            var style = this.value === 'Fan' || this.value === 'Super Fan' ? 'block' : 'none';
-            document.getElementById('favoriteNBATeam').style.display = style;
-            document.getElementById('favoriteNBATeam').required = this.value === 'Fan' || this.value === 'Super Fan';
-        });
-
-        document.getElementById('nflFanStatus').addEventListener('change', function() {
-            var style = this.value === 'Fan' || this.value === 'Super Fan' ? 'block' : 'none';
-            document.getElementById('favoriteNFLTeam').style.display = style;
-            document.getElementById('favoriteNFLTeam').required = this.value === 'Fan' || this.value === 'Super Fan';
-        });
+        setupFanStatusToggle('mlbFanStatus', 'favoriteMLBTeam');
+        setupFanStatusToggle('nbaFanStatus', 'favoriteNBATeam');
+        setupFanStatusToggle('nflFanStatus', 'favoriteNFLTeam');
 
         document.getElementById('registerForm').onsubmit = async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            
             const mlbFanStatus = document.getElementById('mlbFanStatus').value;
-            const favoriteMLBTeam = document.getElementById('favoriteMLBTeam').value;
             const nbaFanStatus = document.getElementById('nbaFanStatus').value;
-            const favoriteNBATeam = document.getElementById('favoriteNBATeam').value;
             const nflFanStatus = document.getElementById('nflFanStatus').value;
-            const favoriteNFLTeam = document.getElementById('favoriteNFLTeam').value;
 
             if (mlbFanStatus === 'Not a Fan' && nbaFanStatus === 'Not a Fan' && nflFanStatus === 'Not a Fan') {
                 alert('You must be a fan or super fan of at least one league to register.');
                 return;
             }
 
-            const response = await fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                    password,
-                    mlbFanStatus,
-                    favoriteMLBTeam,
-                    nbaFanStatus,
-                    favoriteNBATeam,
-                    nflFanStatus,
-                    favoriteNFLTeam,
-                }),
-            });
+            const data = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                mlbFanStatus,
+                favoriteMLBTeam: document.getElementById('favoriteMLBTeam').value,
+                nbaFanStatus,
+                favoriteNBATeam: document.getElementById('favoriteNBATeam').value,
+                nflFanStatus,
+                favoriteNFLTeam: document.getElementById('favoriteNFLTeam').value,
+            };
 
-            const data = await response.json();
-            if (response.ok) {
-                window.location.href = '/homepage.html';
-            } else {
-                alert(data.message);
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    window.location.href = '/homepage.html';
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
             }
         };
     </script>

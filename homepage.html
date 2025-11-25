@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect a Bank Account</title>
+    <title>Dashboard - FanSpend</title>
     <style>
         body {
             background-color: #000000;
@@ -12,14 +12,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         header {
             position: absolute;
             top: 20px;
             left: 20px;
+        }
+        h1 {
+            margin-top: 60px;
         }
         button {
             margin: 10px;
@@ -42,11 +45,11 @@
             border: 1px solid #33ff33;
             background-color: #000000;
             color: #33ff33;
-            font-family: 'Courier New', monospace;
             text-align: center;
         }
         table {
-            width: 80%;
+            width: 95%;
+            max-width: 1200px;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -54,48 +57,92 @@
             border: 1px solid #33ff33;
             padding: 8px;
             text-align: left;
+            font-size: 14px;
         }
         th {
-            background-color: #000000;
+            background-color: #111;
             color: #33ff33;
+        }
+        .points-total {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #33ff33;
+        }
+        .loading {
+            display: none;
+            margin: 20px;
         }
     </style>
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+</head>
+<body>
+    <header>
+        <button onclick="location.href='/'">Home</button>
+    </header>
+    
+    <h1>FanSpend Dashboard</h1>
+    
+    <button id="link-button">Connect Your Bank Account</button>
+    
+    <div id="loading" class="loading">Loading transactions...</div>
+    <div id="message-box" class="message-box"></div>
+    
+    <div id="points-total" class="points-total" style="display: none;">
+        Total FanSpend Points: <span id="total-points">0</span>
+    </div>
+    
+    <table id="sponsor-transactions" hidden>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Merchant</th>
+                <th>Amount</th>
+                <th>Matched Sponsor</th>
+                <th>League</th>
+                <th>Points Earned</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
     <script>
         function exchangePublicToken(publicToken) {
             fetch('/api/exchange_public_token', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ public_token: publicToken }),
             })
             .then(response => response.json())
-            .then(exchangeData => {
-                if (exchangeData.access_token) {
-                    fetchTransactions(exchangeData.access_token);
+            .then(data => {
+                if (data.access_token) {
+                    fetchTransactions(data.access_token);
                 } else {
-                    console.error('Access token not present in the exchange response');
+                    console.error('No access token received');
+                    showMessage('Failed to connect bank account', true);
                 }
             })
             .catch(error => {
-                console.error('Error exchanging public token:', error);
+                console.error('Token exchange error:', error);
+                showMessage('Failed to connect bank account', true);
             });
         }
 
         function fetchTransactions(accessToken) {
+            document.getElementById('loading').style.display = 'block';
+            
             fetch(`/api/transactions?access_token=${accessToken}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Failed to fetch transactions');
                     return response.json();
                 })
                 .then(() => {
                     fetchTransactionsWithSponsors();
                 })
                 .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
+                    console.error('Transaction fetch error:', error);
+                    showMessage('Failed to load transactions', true);
+                    document.getElementById('loading').style.display = 'none';
                 });
         }
 
@@ -103,86 +150,83 @@
             fetch('/api/transactions_with_sponsors')
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    
                     const table = document.getElementById('sponsor-transactions');
                     const tbody = table.querySelector('tbody');
-                    table.removeAttribute('hidden'); // Show table when data is loaded
-                    tbody.innerHTML = ""; // Clear any existing rows
-                    data.forEach(transaction => {
+                    
+                    if (data.length === 0) {
+                        showMessage('No sponsor transactions found yet. Keep shopping at team sponsors to earn points!');
+                        return;
+                    }
+                    
+                    table.removeAttribute('hidden');
+                    tbody.innerHTML = '';
+                    
+                    let totalPoints = 0;
+                    
+                    data.forEach(txn => {
                         const row = tbody.insertRow(-1);
-                        row.insertCell(0).textContent = transaction.date;
-                        row.insertCell(1).textContent = transaction.name;
-                        row.insertCell(2).textContent = `$${transaction.amount}`;
-                        row.insertCell(3).textContent = transaction.matched_sponsor || 'N/A';
-                        row.insertCell(4).textContent = transaction.sponsor_league || 'N/A';
-                        row.insertCell(5).textContent = transaction.fanspend_points ?? 0;
-                        row.insertCell(6).textContent = transaction.favorite_team;
-                        row.insertCell(7).textContent = transaction.favorite_nba_team;
-                        row.insertCell(8).textContent = transaction.favorite_nfl_team;
+                        row.insertCell(0).textContent = txn.date;
+                        row.insertCell(1).textContent = txn.name || txn.merchant_name;
+                        row.insertCell(2).textContent = `$${Math.abs(txn.amount).toFixed(2)}`;
+                        row.insertCell(3).textContent = txn.matched_sponsor || 'N/A';
+                        row.insertCell(4).textContent = txn.sponsor_league || 'N/A';
+                        row.insertCell(5).textContent = txn.fanspend_points || 0;
+                        
+                        totalPoints += txn.fanspend_points || 0;
                     });
+                    
+                    document.getElementById('total-points').textContent = totalPoints;
+                    document.getElementById('points-total').style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Error fetching transactions with sponsors:', error);
+                    console.error('Error fetching sponsor transactions:', error);
+                    document.getElementById('loading').style.display = 'none';
                 });
         }
 
+        function showMessage(text, isError = false) {
+            const box = document.getElementById('message-box');
+            box.textContent = text;
+            box.style.display = 'block';
+            box.style.borderColor = isError ? '#ff3333' : '#33ff33';
+            box.style.color = isError ? '#ff3333' : '#33ff33';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            // Load existing transactions on page load
+            fetchTransactionsWithSponsors();
+            
             document.getElementById('link-button').addEventListener('click', function() {
-                console.log('Button clicked, attempting to create a link token');
                 fetch('/api/create_link_token', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Data received from create link token:', data);
+                    if (!data.link_token) {
+                        showMessage('Failed to initialize bank connection', true);
+                        return;
+                    }
+                    
                     const linkHandler = Plaid.create({
                         token: data.link_token,
-                        onSuccess: (public_token, metadata) => {
-                            console.log('Success! Received public token:', public_token);
+                        onSuccess: (public_token) => {
                             exchangePublicToken(public_token);
                         },
-                        onExit: (err, metadata) => {
-                            console.error('Plaid Link exit:', err, metadata);
+                        onExit: (err) => {
+                            if (err) console.error('Plaid Link exit:', err);
                         },
-                        onLoad: () => {
-                            console.log('Plaid Link loaded successfully!');
-                        }
                     });
                     linkHandler.open();
                 })
                 .catch(error => {
-                    console.error('Error during Plaid Link initialization:', error);
+                    console.error('Plaid Link init error:', error);
+                    showMessage('Failed to initialize bank connection', true);
                 });
             });
         });
     </script>
-</head>
-<body>
-    <header>
-        <button onclick="location.href='https://fanspend2-6d01bb714a0e.herokuapp.com/'">Home</button>
-    </header>
-    <button id="link-button">Connect Primary Spending Account</button>
-    <div id="message-box" class="message-box"></div>
-    <table id="sponsor-transactions" hidden>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Amount</th>
-                <th>Sponsor</th>
-                <th>League</th>
-                <th>FanSpend Points</th>
-                <th>Favorite Team</th>
-                <th>Favorite NBA Team</th>
-                <th>Favorite NFL Team</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Transactions will be dynamically added here -->
-        </tbody>
-    </table>
 </body>
-
 </html>

@@ -2,32 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Insights Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insights Dashboard - FanSpend</title>
     <style>
         body {
             background-color: #000000;
             color: #33ff33;
             font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .nav-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #33ff33;
+            color: #000000;
         }
         .tab {
             overflow: hidden;
             border: 1px solid #33ff33;
             background-color: #000000;
+            margin-top: 40px;
         }
         .tab button {
-            background-color: inherit;
             float: left;
             border: none;
             outline: none;
-            cursor: pointer;
             padding: 14px 16px;
-            transition: 0.3s;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
-        }
-        .tab button:hover {
-            background-color: #33ff33;
-            color: #000000;
         }
         .tab button.active {
             background-color: #33ff33;
@@ -35,164 +51,207 @@
         }
         .tabcontent {
             display: none;
-            padding: 6px 12px;
+            padding: 20px;
             border: 1px solid #33ff33;
             border-top: none;
-            margin-top: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #33ff33;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #000000;
-            color: #33ff33;
+            background-color: #111;
         }
         .chart-container {
             width: 80%;
-            margin: auto;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #111;
+            padding: 20px;
+            border: 1px solid #33ff33;
+        }
+        select {
+            padding: 10px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <button onclick="location.href='https://fanspend2-6d01bb714a0e.herokuapp.com/'">Home</button>
+    <button class="nav-button" onclick="location.href='/'">Home</button>
+    
+    <h1>Sponsor Insights Dashboard</h1>
+    
     <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'Teams')" id="defaultOpen">Overall Spending by Team</button>
-        <button class="tablinks" onclick="openTab(event, 'Channels')">Transactions by Payment Channel</button>
+        <button class="tablinks" onclick="openTab(event, 'Teams')" id="defaultOpen">Spending by Team</button>
+        <button class="tablinks" onclick="openTab(event, 'Channels')">Payment Channels</button>
     </div>
 
     <div id="Teams" class="tabcontent">
-        <h2>Overall Spending by Team</h2>
+        <h2>Total Spending by Favorite Team</h2>
         <div class="chart-container">
             <canvas id="teamSpendingChart"></canvas>
         </div>
         <table id="teamSpending">
-            <tr>
-                <th>Team</th>
-                <th>Total Spending</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    <th>Total Spending</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
         </table>
     </div>
 
     <div id="Channels" class="tabcontent">
         <h2>Transactions by Payment Channel</h2>
+        <div>
+            <label for="teamNameFilter">Filter by Team: </label>
+            <select id="teamNameFilter">
+                <option value="All">All Teams</option>
+            </select>
+        </div>
         <div class="chart-container">
             <canvas id="paymentChannelChart"></canvas>
         </div>
-        <select id="teamNameFilter">
-            <option value="All">All Teams</option>
-        </select>
         <table id="paymentChannelTransactions">
-            <tr>
-                <th>Payment Channel</th>
-                <th>Transaction Count</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Payment Channel</th>
+                    <th>Transaction Count</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
         </table>
     </div>
 
     <script>
+        let teamChart = null;
+        let channelChart = null;
+
         function fetchTotalSpendingByTeam() {
             fetch('/api/total_spending_by_team')
-            .then(response => response.json())
-            .then(data => {
-                const table = document.getElementById('teamSpending');
-                const filter = document.getElementById('teamNameFilter');
-                const chartData = {
-                    labels: [],
-                    datasets: [{
-                        label: 'Total Spending by Team',
-                        data: [],
-                        backgroundColor: 'rgba(51, 255, 51, 0.2)',
-                        borderColor: 'rgba(51, 255, 51, 1)',
-                        borderWidth: 1
-                    }]
-                };
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#teamSpending tbody');
+                    const filter = document.getElementById('teamNameFilter');
+                    tbody.innerHTML = '';
 
-                data.forEach(teamSpending => {
-                    const row = table.insertRow(-1);
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    cell1.textContent = teamSpending.favorite_team;
-                    cell2.textContent = `$${teamSpending.total_spending}`;
+                    const chartData = {
+                        labels: [],
+                        datasets: [{
+                            label: 'Total Spending ($)',
+                            data: [],
+                            backgroundColor: 'rgba(51, 255, 51, 0.3)',
+                            borderColor: 'rgba(51, 255, 51, 1)',
+                            borderWidth: 2
+                        }]
+                    };
 
-                    chartData.labels.push(teamSpending.favorite_team);
-                    chartData.datasets[0].data.push(teamSpending.total_spending);
+                    data.forEach(item => {
+                        if (!item.favorite_team) return;
+                        
+                        const row = tbody.insertRow(-1);
+                        row.insertCell(0).textContent = item.favorite_team;
+                        row.insertCell(1).textContent = `$${parseFloat(item.total_spending).toFixed(2)}`;
 
-                    let option = new Option(teamSpending.favorite_team, teamSpending.favorite_team);
-                    filter.add(option);
-                });
+                        chartData.labels.push(item.favorite_team);
+                        chartData.datasets[0].data.push(item.total_spending);
 
-                const ctx = document.getElementById('teamSpendingChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: chartData,
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                        // Add to filter dropdown
+                        const option = new Option(item.favorite_team, item.favorite_team);
+                        filter.add(option);
+                    });
+
+                    // Destroy existing chart before creating new one
+                    if (teamChart) teamChart.destroy();
+                    
+                    const ctx = document.getElementById('teamSpendingChart').getContext('2d');
+                    teamChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: { 
+                                    beginAtZero: true,
+                                    ticks: { color: '#33ff33' },
+                                    grid: { color: '#333' }
+                                },
+                                x: { 
+                                    ticks: { color: '#33ff33' },
+                                    grid: { color: '#333' }
+                                }
+                            },
+                            plugins: {
+                                legend: { labels: { color: '#33ff33' } }
                             }
                         }
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                    });
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         function fetchTransactionsByPaymentChannel(team) {
-            const url = team && team !== "All" ? `/api/transactions_by_team?teamName=${encodeURIComponent(team)}` : `/api/transactions_by_payment_channel`;
+            const url = team && team !== 'All' 
+                ? `/api/transactions_by_team?teamName=${encodeURIComponent(team)}` 
+                : '/api/transactions_by_payment_channel';
+
             fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const table = document.getElementById('paymentChannelTransactions');
-                while (table.rows.length > 1) {
-                    table.deleteRow(1);
-                }
-                const chartData = {
-                    labels: [],
-                    datasets: [{
-                        label: 'Transactions by Payment Channel',
-                        data: [],
-                        backgroundColor: 'rgba(51, 255, 51, 0.2)',
-                        borderColor: 'rgba(51, 255, 51, 1)',
-                        borderWidth: 1
-                    }]
-                };
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#paymentChannelTransactions tbody');
+                    tbody.innerHTML = '';
 
-                data.forEach(item => {
-                    const row = table.insertRow(-1);
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    cell1.textContent = item.payment_channel;
-                    cell2.textContent = item.transaction_count;
+                    const chartData = {
+                        labels: [],
+                        datasets: [{
+                            label: 'Transaction Count',
+                            data: [],
+                            backgroundColor: 'rgba(51, 255, 51, 0.3)',
+                            borderColor: 'rgba(51, 255, 51, 1)',
+                            borderWidth: 2
+                        }]
+                    };
 
-                    chartData.labels.push(item.payment_channel);
-                    chartData.datasets[0].data.push(item.transaction_count);
-                });
+                    data.forEach(item => {
+                        const row = tbody.insertRow(-1);
+                        row.insertCell(0).textContent = item.payment_channel || 'Unknown';
+                        row.insertCell(1).textContent = item.transaction_count;
 
-                const ctx = document.getElementById('paymentChannelChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: chartData,
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                        chartData.labels.push(item.payment_channel || 'Unknown');
+                        chartData.datasets[0].data.push(item.transaction_count);
+                    });
+
+                    // Destroy existing chart before creating new one
+                    if (channelChart) channelChart.destroy();
+
+                    const ctx = document.getElementById('paymentChannelChart').getContext('2d');
+                    channelChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { 
+                                    labels: { color: '#33ff33' },
+                                    position: 'bottom'
+                                }
                             }
                         }
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                    });
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         document.getElementById('teamNameFilter').addEventListener('change', function() {
@@ -200,23 +259,24 @@
         });
 
         function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+            const tabcontent = document.getElementsByClassName('tabcontent');
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = 'none';
             }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
+
+            const tablinks = document.getElementsByClassName('tablinks');
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(' active', '');
             }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+
+            document.getElementById(tabName).style.display = 'block';
+            evt.currentTarget.className += ' active';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchTotalSpendingByTeam();
             fetchTransactionsByPaymentChannel();
-            document.getElementById("defaultOpen").click();
+            document.getElementById('defaultOpen').click();
         });
     </script>
 </body>
