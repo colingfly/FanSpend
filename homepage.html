@@ -558,6 +558,13 @@
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Connect Bank Button - Always visible -->
+            <div style="margin-bottom: 24px;">
+                <button class="connect-bank-button" id="link-button-top" style="width: 100%; padding: 20px; font-size: 16px; font-weight: 700;">
+                    🏦 CONNECT BANK ACCOUNT TO START EARNING
+                </button>
+            </div>
+
             <!-- Coverage Alert -->
             <div class="coverage-alert" id="coverage-alert">
                 <div class="alert-text">
@@ -568,7 +575,7 @@
             </div>
 
             <!-- Connect Bank Section (shown if no access token) -->
-            <div class="connect-bank-section" id="connect-bank-section" style="display: none;">
+            <div class="connect-bank-section" id="connect-bank-section" style="display: block;">
                 <div class="connect-bank-title">CONNECT YOUR BANK TO START EARNING</div>
                 <div style="color: #888; font-size: 14px; margin-bottom: 16px;">
                     Link your account securely with Plaid to track transactions and earn points
@@ -628,6 +635,7 @@
                     accessToken = data.access_token;
                     fetchTransactions(data.access_token);
                     document.getElementById('connect-bank-section').style.display = 'none';
+                    document.getElementById('link-button-top').style.display = 'none';
                 }
             })
             .catch(error => console.error('Token exchange error:', error));
@@ -701,29 +709,35 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchTransactionsWithSponsors();
             
-            document.getElementById('link-button').addEventListener('click', function() {
-                fetch('/api/create_link_token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.link_token) return;
-                    
-                    const linkHandler = Plaid.create({
-                        token: data.link_token,
-                        onSuccess: (public_token) => {
-                            exchangePublicToken(public_token);
-                        },
-                        onExit: (err) => {
-                            if (err) console.error('Plaid Link exit:', err);
-                        },
-                    });
-                    linkHandler.open();
-                })
-                .catch(error => console.error('Plaid Link init error:', error));
-            });
+            // Connect button at top
+            document.getElementById('link-button-top').addEventListener('click', initPlaidLink);
+            
+            // Connect button in section (if shown)
+            document.getElementById('link-button').addEventListener('click', initPlaidLink);
         });
+
+        function initPlaidLink() {
+            fetch('/api/create_link_token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.link_token) return;
+                
+                const linkHandler = Plaid.create({
+                    token: data.link_token,
+                    onSuccess: (public_token) => {
+                        exchangePublicToken(public_token);
+                    },
+                    onExit: (err) => {
+                        if (err) console.error('Plaid Link exit:', err);
+                    },
+                });
+                linkHandler.open();
+            })
+            .catch(error => console.error('Plaid Link init error:', error));
+        }
     </script>
 </body>
 </html>
