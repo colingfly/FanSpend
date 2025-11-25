@@ -221,8 +221,8 @@ app.post('/api/exchange_public_token', async (req, res) => {
 
 app.get('/api/transactions', async (req, res) => {
     const access_token = req.query.access_token;
-    const start_date = '2023-01-01';
-    const end_date = '2024-12-31';
+    const end_date = new Date().toISOString().split('T')[0];
+    const start_date = new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString().split('T')[0];
     const username = req.session.username;
     const user_id = req.session.user_id;
     let transactions = [];
