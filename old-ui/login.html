@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FanSpend</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            border-bottom: 2px solid #33ff33;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #33ff33;
+            background-color: #000000;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+        }
+        input {
+            width: 250px;
+        }
+        button {
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #33ff33;
+            color: #000000;
+        }
+        .nav-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button class="nav-button" onclick="location.href='/'">Home</button>
+    <h1>Welcome, please login</h1>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username or Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="hidden" id="loginType" value="">
+        <button type="submit">Login</button>
+    </form>
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="fan-register-button" style="display: none;">Register as a Fan</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type') || 'fan';
+            document.getElementById('loginType').value = type;
+            
+            if (type === 'fan') {
+                document.getElementById('fan-register-button').style.display = 'inline-block';
+            }
+        });
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginType = document.getElementById('loginType').value;
+
+            const endpoint = loginType === 'customer' ? '/customer-login' : '/login';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    window.location.href = loginType === 'customer' ? '/insights.html' : '/homepage.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Login failed. Please try again.');
+            }
+        };
+
+        document.getElementById('fan-register-button').addEventListener('click', () => {
+            window.location.href = '/register.html';
+        });
+    </script>
+</body>
+</html>

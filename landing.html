@@ -3,42 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to FanSpend</title>
+    <title>FanSpend - Earn Rewards for Supporting Your Team</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             background-color: #000000;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hero Section */
+        .hero {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            position: relative;
+            overflow: hidden;
         }
-        h1 {
+
+        .hero-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 400px;
+            font-weight: 900;
+            opacity: 0.02;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .logo {
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+            max-width: 700px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 48px;
+            text-align: center;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 48px;
+            margin-bottom: 48px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: #53D337;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        /* CTA Buttons */
+        .cta-section {
+            display: flex;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-button {
+            padding: 20px 48px;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-fan {
+            background: linear-gradient(135deg, #53D337 0%, #3BA526 100%);
+            color: #000;
+        }
+
+        .cta-fan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(83, 211, 55, 0.3);
+        }
+
+        .cta-sponsor {
+            background: #1a1a1a;
+            color: #fff;
+            border: 2px solid #D40000;
+        }
+
+        .cta-sponsor:hover {
+            background: #D40000;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 0, 0, 0.3);
+        }
+
+        /* Feature Grid */
+        .features {
+            background: #0a0a0a;
+            padding: 80px 20px;
+            border-top: 1px solid #333;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-title {
+            font-size: 36px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 64px;
+            letter-spacing: -1px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #53D337;
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
             margin-bottom: 20px;
         }
-        button {
-            margin: 10px;
-            padding: 15px 30px;
-            border: 1px solid #33ff33;
-            background-color: #000000;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 12px;
         }
-        button:hover {
-            background-color: #33ff33;
-            color: #000000;
+
+        .feature-text {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: #000;
+            border-top: 1px solid #333;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 48px;
+            }
+
+            .tagline {
+                font-size: 24px;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .cta-section {
+                flex-direction: column;
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to FanSpend</h1>
-    <p>Earn rewards for supporting your favorite teams</p>
-    <button onclick="window.location.href='register.html'">I'm a Fan</button>
-    <button onclick="window.location.href='login.html?type=customer'">I'm a Sponsor</button>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-bg">$</div>
+        
+        <div class="logo">FANSPEND</div>
+        
+        <div class="tagline">
+            EARN REWARDS FOR SUPPORTING YOUR TEAM'S SPONSORS
+        </div>
+        
+        <div class="subtitle">
+            Connect your bank. Shop at team sponsors. Stack points automatically.
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">2X</div>
+                <div class="stat-label">SUPER FAN MULTIPLIER</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">30+</div>
+                <div class="stat-label">TEAM SPONSORS</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">AUTO-TRACKING</div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <button class="cta-button cta-fan" onclick="window.location.href='register.html'">
+                <span style="position: relative;">I'M A FAN →</span>
+            </button>
+            <button class="cta-button cta-sponsor" onclick="window.location.href='login.html?type=customer'">
+                <span style="position: relative;">I'M A SPONSOR →</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features">
+        <div class="features-container">
+            <div class="features-title">HOW IT WORKS</div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏈</div>
+                    <div class="feature-title">1. PICK YOUR TEAMS</div>
+                    <div class="feature-text">
+                        Select your favorite NFL, NBA, and MLB teams. Declare yourself a Fan or Super Fan for 2x multipliers.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <div class="feature-title">2. CONNECT YOUR BANK</div>
+                    <div class="feature-text">
+                        Securely link your bank account with Plaid. We track transactions at team sponsors automatically.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">3. EARN POINTS</div>
+                    <div class="feature-text">
+                        Shop at McDonald's, Nike, AT&T, and 30+ sponsors. Points stack automatically every time you spend.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-text">
+            © 2025 FANSPEND • SECURE • AUTOMATIC • REWARDING
+        </div>
+    </div>
 </body>
 </html>

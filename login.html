@@ -5,61 +5,262 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - FanSpend</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             background-color: #000000;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            border-bottom: 2px solid #33ff33;
-            text-align: center;
-        }
-        form {
             display: flex;
             flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 32px;
+            border-bottom: 1px solid #333;
+            display: flex;
             align-items: center;
-            margin-top: 40px;
+            gap: 24px;
         }
-        input, button {
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid #33ff33;
-            background-color: #000000;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
-        }
-        input {
-            width: 250px;
-        }
-        button {
+
+        .back-button {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            color: #fff;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.2s;
         }
-        button:hover {
-            background-color: #33ff33;
-            color: #000000;
+
+        .back-button:hover {
+            border-color: #53D337;
+            background: #53D337;
+            color: #000;
         }
-        .nav-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        /* Main Container */
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 450px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            padding: 48px 40px;
+        }
+
+        .login-title {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #000;
+            border: 2px solid #333;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #53D337;
+        }
+
+        .form-input::placeholder {
+            color: #555;
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #53D337 0%, #3BA526 100%);
+            border: none;
+            color: #000;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 32px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(83, 211, 55, 0.3);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 32px 0;
+            gap: 16px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: #333;
+        }
+
+        .divider-text {
+            font-size: 12px;
+            color: #666;
+            font-weight: 700;
+        }
+
+        /* Register Link */
+        .register-section {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .register-text {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            border: 2px solid #D40000;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .register-button:hover {
+            background: #D40000;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            background: rgba(212, 0, 0, 0.1);
+            border: 1px solid #D40000;
+            color: #D40000;
+            font-size: 13px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .alert.success {
+            background: rgba(83, 211, 55, 0.1);
+            border-color: #53D337;
+            color: #53D337;
         }
     </style>
 </head>
 <body>
-    <button class="nav-button" onclick="location.href='/'">Home</button>
-    <h1>Welcome, please login</h1>
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Username or Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <input type="hidden" id="loginType" value="">
-        <button type="submit">Login</button>
-    </form>
-    <div style="text-align: center; margin-top: 20px;">
-        <button id="fan-register-button" style="display: none;">Register as a Fan</button>
+    <!-- Header -->
+    <div class="header">
+        <button class="back-button" onclick="location.href='/'">← BACK</button>
+        <div class="logo">FANSPEND</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="login-box">
+            <div class="login-title">LOGIN</div>
+            <div class="login-subtitle" id="subtitle">Welcome back, fan</div>
+
+            <div class="alert" id="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">USERNAME OR EMAIL</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        class="form-input" 
+                        placeholder="Enter your username or email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">PASSWORD</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <input type="hidden" id="loginType" value="">
+
+                <button type="submit" class="submit-button">
+                    LOGIN →
+                </button>
+            </form>
+
+            <div class="register-section" id="register-section" style="display: none;">
+                <div class="divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">NEW FAN?</div>
+                    <div class="divider-line"></div>
+                </div>
+                <div class="register-text">Don't have an account yet?</div>
+                <button class="register-button" onclick="location.href='register.html'">
+                    REGISTER AS A FAN
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -69,12 +270,16 @@
             document.getElementById('loginType').value = type;
             
             if (type === 'fan') {
-                document.getElementById('fan-register-button').style.display = 'inline-block';
+                document.getElementById('subtitle').textContent = 'Welcome back, fan';
+                document.getElementById('register-section').style.display = 'block';
+            } else {
+                document.getElementById('subtitle').textContent = 'Sponsor/Partner Login';
             }
         });
 
         document.getElementById('loginForm').onsubmit = async (e) => {
             e.preventDefault();
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const loginType = document.getElementById('loginType').value;
@@ -91,18 +296,24 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    window.location.href = loginType === 'customer' ? '/insights.html' : '/homepage.html';
+                    showAlert('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = loginType === 'customer' ? '/insights.html' : '/homepage.html';
+                    }, 500);
                 } else {
-                    alert(data.message);
+                    showAlert(data.message || 'Login failed. Please try again.');
                 }
             } catch (error) {
-                alert('Login failed. Please try again.');
+                showAlert('Login failed. Please try again.');
             }
         };
 
-        document.getElementById('fan-register-button').addEventListener('click', () => {
-            window.location.href = '/register.html';
-        });
+        function showAlert(message, type = 'error') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = 'alert' + (type === 'success' ? ' success' : '');
+            alert.style.display = 'block';
+        }
     </script>
 </body>
 </html>

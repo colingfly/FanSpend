@@ -5,108 +5,617 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FanSpend</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             background-color: #000000;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Top Alert Bar */
+        .alert-bar {
+            background: linear-gradient(135deg, #D40000 0%, #8B0000 100%);
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-content {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .divider {
+            opacity: 0.5;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid #333;
+            padding: 16px 24px;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .header-divider {
+            height: 24px;
+            width: 1px;
+            background: #555;
+        }
+
+        .team-badges {
+            display: flex;
+            gap: 12px;
+        }
+
+        .team-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .team-name {
+            font-weight: 900;
+        }
+
+        .team-status {
+            color: #888;
+            font-size: 11px;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+        }
+
+        /* Sidebar */
+        .sidebar {
             display: flex;
             flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Points Card */
+        .points-card {
+            background: linear-gradient(135deg, #53D337 0%, #3BA526 100%);
+            padding: 32px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .points-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 120px;
+            font-weight: 900;
+            opacity: 0.05;
+            line-height: 1;
+        }
+
+        .points-content {
+            position: relative;
+        }
+
+        .points-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .points-value {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .points-change {
+            display: flex;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Stats Card */
+        .stats-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
             padding: 20px;
         }
-        header {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+
+        .stats-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
         }
-        h1 {
-            margin-top: 60px;
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
         }
-        button {
-            margin: 10px;
-            padding: 15px 30px;
-            border: 1px solid #33ff33;
-            background-color: #000000;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
+
+        .stat-row:not(:last-child) {
+            border-bottom: 1px solid #333;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .stat-value.green {
+            color: #53D337;
+        }
+
+        /* Streak Card */
+        .streak-card {
+            background: linear-gradient(135deg, #FF6B00 0%, #D40000 100%);
+            padding: 20px;
+        }
+
+        .streak-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .streak-value {
+            font-size: 32px;
+            font-weight: 900;
+        }
+
+        .streak-text {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Alert Banner */
+        .coverage-alert {
+            background: #1a1a1a;
+            border-left: 4px solid #53D337;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-text {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .alert-subtitle {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .alert-button {
+            background: #53D337;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background 0.2s;
         }
-        button:hover {
-            background-color: #33ff33;
-            color: #000000;
+
+        .alert-button:hover {
+            background: #3BA526;
         }
-        .message-box {
-            display: none;
-            margin: 20px;
-            padding: 15px;
-            border: 1px solid #33ff33;
-            background-color: #000000;
-            color: #33ff33;
+
+        /* Connect Bank Button */
+        .connect-bank-section {
+            background: #1a1a1a;
+            border: 2px solid #53D337;
+            padding: 24px;
             text-align: center;
         }
-        table {
-            width: 95%;
-            max-width: 1200px;
-            border-collapse: collapse;
-            margin: 20px 0;
+
+        .connect-bank-title {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #53D337;
         }
-        th, td {
-            border: 1px solid #33ff33;
-            padding: 8px;
-            text-align: left;
+
+        .connect-bank-button {
+            background: #53D337;
+            color: #000;
+            border: none;
+            padding: 14px 32px;
+            font-weight: 700;
             font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 12px;
         }
-        th {
-            background-color: #111;
-            color: #33ff33;
+
+        .connect-bank-button:hover {
+            background: #3BA526;
         }
-        .points-total {
-            font-size: 24px;
-            margin: 20px 0;
-            padding: 15px;
-            border: 2px solid #33ff33;
+
+        /* Transaction Table */
+        .transaction-table {
+            background: #1a1a1a;
+            border: 2px solid #333;
         }
+
+        .table-header {
+            border-bottom: 2px solid #333;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .table-subtitle {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .table-columns {
+            display: grid;
+            grid-template-columns: 80px 3fr 1.5fr 1.5fr 1.5fr 1fr;
+            gap: 16px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #333;
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 80px 3fr 1.5fr 1.5fr 1.5fr 1fr;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid #333;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-date {
+            font-family: 'Courier New', monospace;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .table-merchant {
+            font-weight: 700;
+        }
+
+        .table-amount {
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-matched {
+            background: #53D337;
+            color: #000;
+        }
+
+        .badge-no-match {
+            background: #555;
+            color: #888;
+        }
+
+        .multiplier {
+            color: #FFD700;
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        .points {
+            color: #53D337;
+            font-weight: 900;
+            font-size: 18px;
+            text-align: right;
+        }
+
         .loading {
-            display: none;
-            margin: 20px;
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .no-data-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        /* Bottom CTAs */
+        .cta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .cta-card {
+            padding: 24px;
+        }
+
+        .cta-referral {
+            background: linear-gradient(135deg, #D40000 0%, #8B0000 100%);
+        }
+
+        .cta-rewards {
+            background: #1a1a1a;
+            border: 2px solid #53D337;
+        }
+
+        .cta-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .cta-label.green {
+            color: #53D337;
+        }
+
+        .cta-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .cta-button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 24px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .cta-button:hover {
+            background: #ddd;
+        }
+
+        .cta-text {
+            font-size: 13px;
+            color: #888;
         }
     </style>
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </head>
 <body>
-    <header>
-        <button onclick="location.href='/'">Home</button>
-    </header>
-    
-    <h1>FanSpend Dashboard</h1>
-    
-    <button id="link-button">Connect Your Bank Account</button>
-    
-    <div id="loading" class="loading">Loading transactions...</div>
-    <div id="message-box" class="message-box"></div>
-    
-    <div id="points-total" class="points-total" style="display: none;">
-        Total FanSpend Points: <span id="total-points">0</span>
+    <!-- Top Alert Bar -->
+    <div class="alert-bar">
+        <div class="alert-content">
+            <span class="alert-item">🔥 HOT: <span id="monthly-points-alert">0</span> PTS THIS MONTH</span>
+            <span class="divider">•</span>
+            <span class="alert-item"><span id="streak-days">0</span>-DAY STREAK 🏆</span>
+            <span class="divider">•</span>
+            <span class="alert-item">RANK #<span id="user-rank">--</span> OF <span id="total-users">--</span> USERS</span>
+        </div>
+        <div style="font-size: 11px; opacity: 0.9;">LAST UPDATED: LIVE</div>
     </div>
-    
-    <table id="sponsor-transactions" hidden>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Merchant</th>
-                <th>Amount</th>
-                <th>Matched Sponsor</th>
-                <th>League</th>
-                <th>Points Earned</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">FANSPEND</div>
+                <div class="header-divider"></div>
+                <div class="team-badges" id="team-badges">
+                    <!-- Teams will be populated here -->
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 11px; color: #666;">ACCOUNT</div>
+                <div style="font-weight: 700;" id="username">USER</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Total Points Card -->
+            <div class="points-card">
+                <div class="points-bg" id="points-first-digit">0</div>
+                <div class="points-content">
+                    <div class="points-label">TOTAL POINTS</div>
+                    <div class="points-value" id="total-points">0</div>
+                    <div class="points-change">
+                        <span>↗</span>
+                        <span>+<span id="points-change">0</span>% THIS MONTH</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="stats-card">
+                <div class="stats-header">QUICK STATS</div>
+                <div class="stat-row">
+                    <span class="stat-label">Month</span>
+                    <span class="stat-value green" id="monthly-points">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Matched</span>
+                    <span class="stat-value" id="matched-count">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Value</span>
+                    <span class="stat-value green">$<span id="points-value">0</span></span>
+                </div>
+            </div>
+
+            <!-- Hot Streak -->
+            <div class="streak-card">
+                <div class="streak-header">
+                    <span>🔥</span>
+                    <span>HOT STREAK</span>
+                </div>
+                <div class="streak-value"><span id="streak-value">0</span> DAYS</div>
+                <div class="streak-text">Keep spending to maintain streak!</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Coverage Alert -->
+            <div class="coverage-alert" id="coverage-alert">
+                <div class="alert-text">
+                    <div class="alert-title" id="coverage-title">Loading coverage...</div>
+                    <div class="alert-subtitle" id="coverage-subtitle">Checking your team sponsors...</div>
+                </div>
+                <button class="alert-button" onclick="window.location.href='/sponsors'">VIEW ALL</button>
+            </div>
+
+            <!-- Connect Bank Section (shown if no access token) -->
+            <div class="connect-bank-section" id="connect-bank-section" style="display: none;">
+                <div class="connect-bank-title">CONNECT YOUR BANK TO START EARNING</div>
+                <div style="color: #888; font-size: 14px; margin-bottom: 16px;">
+                    Link your account securely with Plaid to track transactions and earn points
+                </div>
+                <button class="connect-bank-button" id="link-button">CONNECT BANK ACCOUNT</button>
+            </div>
+
+            <!-- Transaction Table -->
+            <div class="transaction-table">
+                <div class="table-header">
+                    <div class="table-title">RECENT ACTIVITY</div>
+                    <div class="table-subtitle">LAST 30 DAYS</div>
+                </div>
+
+                <div class="table-columns">
+                    <div>DATE</div>
+                    <div>MERCHANT</div>
+                    <div>AMOUNT</div>
+                    <div>STATUS</div>
+                    <div>MULTIPLIER</div>
+                    <div style="text-align: right;">POINTS</div>
+                </div>
+
+                <div id="transactions-body">
+                    <div class="loading">Loading transactions...</div>
+                </div>
+            </div>
+
+            <!-- Bottom CTAs -->
+            <div class="cta-grid">
+                <div class="cta-card cta-referral">
+                    <div class="cta-label">INVITE FRIENDS</div>
+                    <div class="cta-title">GET 500 PTS PER REFERRAL</div>
+                    <button class="cta-button">GET LINK</button>
+                </div>
+                <div class="cta-card cta-rewards">
+                    <div class="cta-label green">COMING SOON</div>
+                    <div class="cta-title">REDEEM REWARDS</div>
+                    <div class="cta-text">Gift cards, merch, and more</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        let accessToken = null;
+        
         function exchangePublicToken(publicToken) {
             fetch('/api/exchange_public_token', {
                 method: 'POST',
@@ -116,86 +625,80 @@
             .then(response => response.json())
             .then(data => {
                 if (data.access_token) {
+                    accessToken = data.access_token;
                     fetchTransactions(data.access_token);
-                } else {
-                    console.error('No access token received');
-                    showMessage('Failed to connect bank account', true);
+                    document.getElementById('connect-bank-section').style.display = 'none';
                 }
             })
-            .catch(error => {
-                console.error('Token exchange error:', error);
-                showMessage('Failed to connect bank account', true);
-            });
+            .catch(error => console.error('Token exchange error:', error));
         }
 
-        function fetchTransactions(accessToken) {
-            document.getElementById('loading').style.display = 'block';
-            
-            fetch(`/api/transactions?access_token=${accessToken}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Failed to fetch transactions');
-                    return response.json();
-                })
+        function fetchTransactions(token) {
+            fetch(`/api/transactions?access_token=${token}`)
+                .then(response => response.json())
                 .then(() => {
                     fetchTransactionsWithSponsors();
                 })
-                .catch(error => {
-                    console.error('Transaction fetch error:', error);
-                    showMessage('Failed to load transactions', true);
-                    document.getElementById('loading').style.display = 'none';
-                });
+                .catch(error => console.error('Transaction fetch error:', error));
         }
 
         function fetchTransactionsWithSponsors() {
             fetch('/api/transactions_with_sponsors')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none';
-                    
-                    const table = document.getElementById('sponsor-transactions');
-                    const tbody = table.querySelector('tbody');
-                    
-                    if (data.length === 0) {
-                        showMessage('No sponsor transactions found yet. Keep shopping at team sponsors to earn points!');
-                        return;
-                    }
-                    
-                    table.removeAttribute('hidden');
-                    tbody.innerHTML = '';
-                    
-                    let totalPoints = 0;
-                    
-                    data.forEach(txn => {
-                        const row = tbody.insertRow(-1);
-                        row.insertCell(0).textContent = txn.date;
-                        row.insertCell(1).textContent = txn.name || txn.merchant_name;
-                        row.insertCell(2).textContent = `$${Math.abs(txn.amount).toFixed(2)}`;
-                        row.insertCell(3).textContent = txn.matched_sponsor || 'N/A';
-                        row.insertCell(4).textContent = txn.sponsor_league || 'N/A';
-                        row.insertCell(5).textContent = txn.fanspend_points || 0;
-                        
-                        totalPoints += txn.fanspend_points || 0;
-                    });
-                    
-                    document.getElementById('total-points').textContent = totalPoints;
-                    document.getElementById('points-total').style.display = 'block';
+                    renderTransactions(data);
+                    updateStats(data);
                 })
                 .catch(error => {
                     console.error('Error fetching sponsor transactions:', error);
-                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('transactions-body').innerHTML = 
+                        '<div class="no-data"><div class="no-data-title">NO TRANSACTIONS YET</div><div>Connect your bank account to start earning points!</div></div>';
+                    document.getElementById('connect-bank-section').style.display = 'block';
                 });
         }
 
-        function showMessage(text, isError = false) {
-            const box = document.getElementById('message-box');
-            box.textContent = text;
-            box.style.display = 'block';
-            box.style.borderColor = isError ? '#ff3333' : '#33ff33';
-            box.style.color = isError ? '#ff3333' : '#33ff33';
+        function renderTransactions(data) {
+            const tbody = document.getElementById('transactions-body');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<div class="no-data"><div class="no-data-title">NO MATCHED TRANSACTIONS</div><div>Keep shopping at team sponsors to earn points!</div></div>';
+                return;
+            }
+            
+            tbody.innerHTML = data.map(txn => `
+                <div class="table-row">
+                    <div class="table-date">${new Date(txn.date).toLocaleDateString('en-US', {month: 'numeric', day: 'numeric'})}</div>
+                    <div class="table-merchant">${txn.name || txn.merchant_name}</div>
+                    <div class="table-amount">$${Math.abs(txn.amount).toFixed(2)}</div>
+                    <div>
+                        ${txn.matched_sponsor ? 
+                            '<span class="badge badge-matched">MATCHED</span>' : 
+                            '<span class="badge badge-no-match">NO MATCH</span>'}
+                    </div>
+                    <div class="multiplier">${txn.fanspend_points > Math.abs(txn.amount) ? '2X' : ''}</div>
+                    <div class="points">${txn.fanspend_points ? '+' + txn.fanspend_points : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(data) {
+            const totalPoints = data.reduce((sum, txn) => sum + (txn.fanspend_points || 0), 0);
+            const matchedCount = data.filter(txn => txn.matched_sponsor).length;
+            
+            document.getElementById('total-points').textContent = totalPoints.toLocaleString();
+            document.getElementById('points-first-digit').textContent = totalPoints.toString()[0] || '0';
+            document.getElementById('monthly-points').textContent = totalPoints;
+            document.getElementById('monthly-points-alert').textContent = totalPoints;
+            document.getElementById('matched-count').textContent = matchedCount;
+            document.getElementById('points-value').textContent = (totalPoints / 100).toFixed(0);
+            document.getElementById('points-change').textContent = '12';
+            
+            // Mock streak data
+            document.getElementById('streak-value').textContent = '7';
+            document.getElementById('streak-days').textContent = '7';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Load existing transactions on page load
             fetchTransactionsWithSponsors();
             
             document.getElementById('link-button').addEventListener('click', function() {
@@ -205,10 +708,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (!data.link_token) {
-                        showMessage('Failed to initialize bank connection', true);
-                        return;
-                    }
+                    if (!data.link_token) return;
                     
                     const linkHandler = Plaid.create({
                         token: data.link_token,
@@ -221,10 +721,7 @@
                     });
                     linkHandler.open();
                 })
-                .catch(error => {
-                    console.error('Plaid Link init error:', error);
-                    showMessage('Failed to initialize bank connection', true);
-                });
+                .catch(error => console.error('Plaid Link init error:', error));
             });
         });
     </script>

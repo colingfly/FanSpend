@@ -1,0 +1,118 @@
+-- FanSpend Team-Specific Sponsors
+-- Top Teams: Cowboys, Patriots, Packers, Chiefs, Dolphins, Lakers
+-- Note: This is a starter set. Add more teams as needed.
+
+-- Insert team-specific sponsors
+INSERT INTO sponsors (merchant_name, league, team) VALUES
+
+-- Dallas Cowboys (NFL)
+('Ford', 'NFL', 'Dallas Cowboys'),
+('Nike', 'NFL', 'Dallas Cowboys'),
+('Gatorade', 'NFL', 'Dallas Cowboys'),
+('LG Electronics', 'NFL', 'Dallas Cowboys'),
+('Michaels', 'NFL', 'Dallas Cowboys'),
+('Kohler', 'NFL', 'Dallas Cowboys'),
+('Smoothie King', 'NFL', 'Dallas Cowboys'),
+('Coca-Cola', 'NFL', 'Dallas Cowboys'),
+('Raising Canes', 'NFL', 'Dallas Cowboys'),
+('Toyota', 'NFL', 'Dallas Cowboys'),
+('Baylor Scott White', 'NFL', 'Dallas Cowboys'),
+('Lexus', 'NFL', 'Dallas Cowboys'),
+('AT&T', 'NFL', 'Dallas Cowboys'),
+
+-- New England Patriots (NFL)
+('Sports Illustrated', 'NFL', 'New England Patriots'),
+('Empower', 'NFL', 'New England Patriots'),
+('Gillette', 'NFL', 'New England Patriots'),
+('Paycom', 'NFL', 'New England Patriots'),
+('Procter Gamble', 'NFL', 'New England Patriots'),
+
+-- Green Bay Packers (NFL)
+('American Family Insurance', 'NFL', 'Green Bay Packers'),
+('American Family', 'NFL', 'Green Bay Packers'),
+('Associated Bank', 'NFL', 'Green Bay Packers'),
+('Bellin Health', 'NFL', 'Green Bay Packers'),
+('Kwik Trip', 'NFL', 'Green Bay Packers'),
+('Fleet Farm', 'NFL', 'Green Bay Packers'),
+('Harley Davidson', 'NFL', 'Green Bay Packers'),
+('Harley-Davidson', 'NFL', 'Green Bay Packers'),
+('Kohls', 'NFL', 'Green Bay Packers'),
+('Kohl''s', 'NFL', 'Green Bay Packers'),
+('Oscar Mayer', 'NFL', 'Green Bay Packers'),
+
+-- Kansas City Chiefs (NFL)
+('GEHA', 'NFL', 'Kansas City Chiefs'),
+('Campbell''s', 'NFL', 'Kansas City Chiefs'),
+('Campbells', 'NFL', 'Kansas City Chiefs'),
+('Bad Boy Mowers', 'NFL', 'Kansas City Chiefs'),
+('Frito Lay', 'NFL', 'Kansas City Chiefs'),
+('Frito-Lay', 'NFL', 'Kansas City Chiefs'),
+('Oakley', 'NFL', 'Kansas City Chiefs'),
+('Helzberg Diamonds', 'NFL', 'Kansas City Chiefs'),
+('Helzberg', 'NFL', 'Kansas City Chiefs'),
+('Caesars', 'NFL', 'Kansas City Chiefs'),
+('Harrahs', 'NFL', 'Kansas City Chiefs'),
+('Harrah''s', 'NFL', 'Kansas City Chiefs'),
+('DirecTV', 'NFL', 'Kansas City Chiefs'),
+('DIRECTV', 'NFL', 'Kansas City Chiefs'),
+('Direct TV', 'NFL', 'Kansas City Chiefs'),
+('State Farm', 'NFL', 'Kansas City Chiefs'),
+
+-- Miami Dolphins (NFL)
+('Hard Rock', 'NFL', 'Miami Dolphins'),
+('Empower', 'NFL', 'Miami Dolphins'),
+('Lexus', 'NFL', 'Miami Dolphins'),
+('Gatorade', 'NFL', 'Miami Dolphins'),
+('Heineken', 'NFL', 'Miami Dolphins'),
+('Verizon', 'NFL', 'Miami Dolphins'),
+('Ticketmaster', 'NFL', 'Miami Dolphins'),
+('Enhance Health', 'NFL', 'Miami Dolphins'),
+('EPIC Insurance', 'NFL', 'Miami Dolphins'),
+('Perry Ellis', 'NFL', 'Miami Dolphins'),
+('MSC Cruises', 'NFL', 'Miami Dolphins'),
+('Broxel', 'NFL', 'Miami Dolphins'),
+
+-- Los Angeles Lakers (NBA)
+('Bibigo', 'NBA', 'Los Angeles Lakers'),
+('American Express', 'NBA', 'Los Angeles Lakers'),
+('MGM Grand', 'NBA', 'Los Angeles Lakers'),
+('MGM', 'NBA', 'Los Angeles Lakers'),
+('Chevron', 'NBA', 'Los Angeles Lakers'),
+('Delta', 'NBA', 'Los Angeles Lakers'),
+('Delta Airlines', 'NBA', 'Los Angeles Lakers'),
+('Delta Air Lines', 'NBA', 'Los Angeles Lakers'),
+('BioSteel', 'NBA', 'Los Angeles Lakers'),
+('DWS', 'NBA', 'Los Angeles Lakers'),
+('Revolve', 'NBA', 'Los Angeles Lakers'),
+('Beyond Meat', 'NBA', 'Los Angeles Lakers'),
+('Hyperice', 'NBA', 'Los Angeles Lakers'),
+('Crypto.com', 'NBA', 'Los Angeles Lakers'),
+
+-- Keep existing league-wide sponsors
+-- These will match transactions even if team-specific match doesn't hit
+('Nike', 'NBA', NULL),
+('Nike', 'NFL', NULL),
+('Nike', 'MLB', NULL),
+('Gatorade', 'NBA', NULL),
+('Gatorade', 'NFL', NULL),
+('Gatorade', 'MLB', NULL),
+('Budweiser', 'MLB', NULL),
+('Bud Light', 'NFL', NULL),
+('State Farm', 'NBA', NULL),
+('State Farm', 'NFL', NULL),
+('Coca-Cola', 'MLB', NULL),
+('Coca-Cola', 'NBA', NULL),
+('Pepsi', 'NFL', NULL),
+('McDonalds', 'NBA', NULL),
+('McDonald''s', 'NBA', NULL),
+('McDonalds', 'NFL', NULL),
+('McDonald''s', 'NFL', NULL),
+('Taco Bell', 'NBA', NULL),
+('Toyota', 'MLB', NULL),
+('Chevrolet', 'MLB', NULL),
+('T-Mobile', 'MLB', NULL),
+('Verizon', 'NFL', NULL),
+('Amazon', 'NFL', NULL),
+('Microsoft', 'NBA', NULL),
+('Google', 'NBA', NULL),
+('Apple', 'MLB', NULL);
