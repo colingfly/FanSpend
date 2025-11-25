@@ -44,7 +44,13 @@ app.get('/insights.html', (req, res) => res.sendFile(path.join(__dirname, 'insig
 app.get('/team-login.html', (req, res) => res.sendFile(path.join(__dirname, 'team-login.html')));
 
 // MySQL database connection
-const dbUrl = process.env.JAWSDB_URL || 'mysql://mxw0qiguljklguq1:ajolmli2cn4r742b@u28rhuskh0x5paau.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/x9tkoyqxyhhgo64i';
+const dbUrl = process.env.DATABASE_URL;
+
+if (!dbUrl) {
+    console.error('ERROR: DATABASE_URL not configured');
+    process.exit(1);
+}
+
 const dbConfig = url.parse(dbUrl);
 const [user, password] = dbConfig.auth.split(':');
 
