@@ -10,6 +10,7 @@ const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 
 // Create Express app
 const app = express();
+app.set('trust proxy', 1);
 
 // =============================================================================
 // MIDDLEWARE
