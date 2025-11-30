@@ -1,4 +1,4 @@
-# FanSpend 🏈🏀⚾
+# FanSpend
 
 A loyalty rewards platform that connects to users' bank accounts and rewards sports fans for spending at team sponsors.
 
@@ -11,11 +11,11 @@ A loyalty rewards platform that connects to users' bank accounts and rewards spo
 
 ## Features
 
-- 🔐 Secure bank account linking via [Plaid](https://plaid.com/)
-- 🏆 Support for MLB, NBA, and NFL team affiliations
-- 🎯 Fuzzy matching to identify sponsor transactions
-- 📊 Analytics dashboard for sponsors/partners
-- ⚡ Real-time transaction processing
+- Secure bank account linking via [Plaid](https://plaid.com/)
+- Support for MLB, NBA, and NFL team affiliations
+- Fuzzy matching to identify sponsor transactions
+- Analytics dashboard for sponsors/partners
+- Real-time transaction processing
 
 ## Tech Stack
 
